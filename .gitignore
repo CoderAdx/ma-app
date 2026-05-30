@@ -43,3 +43,17 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Variáveis de ambiente
+.env
+lib/config.dart
+
+# Flutter/Dart
+.dart_tool/
+build/
+*.g.dart
+
+# Android
+android/local.properties
+android/key.properties
+*.jks
