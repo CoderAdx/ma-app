@@ -37,9 +37,14 @@ class MaApp extends StatelessWidget {
   }
 }
 
-class AuthGate extends StatelessWidget {
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -51,10 +56,11 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        final session = snapshot.data?.session;
+        final session = snapshot.data?.session ??
+            supabase.auth.currentSession; // <- verifica sessão em cache
 
         if (session != null) {
-          return const HomeRouter(); // <- agora usa o roteador de perfis
+          return const HomeRouter();
         }
 
         return const LoginPage();

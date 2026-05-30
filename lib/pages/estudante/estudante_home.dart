@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ma_app/services/auth_service.dart';
+import 'package:ma_app/pages/estudante/carteira_digital.dart';
 
 class EstudanteHome extends StatelessWidget {
   final Map<String, dynamic> usuario;
@@ -67,7 +68,12 @@ class EstudanteHome extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CarteiraDigital()),
+                  );
+                },
                 icon: const Icon(Icons.badge_outlined),
                 label: const Text('Minha Carteira Digital'),
                 style: OutlinedButton.styleFrom(
