@@ -1,0 +1,34 @@
+name: ma_app
+description: MA – Maruim Acadêmico – Sistema de Gestão do Transporte Universitário
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Supabase — banco, auth e realtime num só pacote
+  supabase_flutter: ^2.0.0
+
+  # Gerenciamento de estado — simples e eficiente
+  provider: ^6.1.0
+
+  # Armazenamento local — para a carteira offline
+  shared_preferences: ^2.2.0
+
+  # Requisições HTTP — para chamar o FastAPI
+  http: ^1.1.0
+
+  # Ícones extras
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
