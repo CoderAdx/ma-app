@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ma_app/services/auth_service.dart';
+import 'package:ma_app/pages/fiscal/lista_alunos.dart';
 
 class FiscalHome extends StatelessWidget {
   final Map<String, dynamic> usuario;
@@ -10,6 +11,8 @@ class FiscalHome extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Painel do Fiscal'),
+        backgroundColor: const Color(0xFF1E6B3C),
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -33,6 +36,8 @@ class FiscalHome extends StatelessWidget {
               label: const Text('Criar Viagem do Dia'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: const Color(0xFF1E6B3C),
+                foregroundColor: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
@@ -48,11 +53,18 @@ class FiscalHome extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ListaAlunos(),
+                ),
+              ),
               icon: const Icon(Icons.people_alt_outlined),
-              label: const Text('Lista de Embarque'),
+              label: const Text('Lista de Alunos'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: const Color(0xFF1E6B3C),
+                foregroundColor: Colors.white,
               ),
             ),
           ],
