@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ma_app/services/auth_service.dart';
 import 'package:ma_app/pages/estudante/carteira_digital.dart';
+import 'package:ma_app/pages/estudante/confirmar_presenca.dart';
 
 class EstudanteHome extends StatelessWidget {
   final Map<String, dynamic> usuario;
@@ -59,7 +60,15 @@ class EstudanteHome extends StatelessWidget {
               const SizedBox(height: 32),
               // Botões de ação — desabilitados se suspenso
               ElevatedButton.icon(
-                onPressed: suspenso ? null : () {},
+                onPressed: suspenso
+                    ? null
+                    : () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const ConfirmarPresenca()),
+                        );
+                      },
                 icon: const Icon(Icons.check_circle_outline),
                 label: const Text('Confirmar Presença'),
                 style: ElevatedButton.styleFrom(
