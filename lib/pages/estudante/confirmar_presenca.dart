@@ -161,6 +161,41 @@ class _ConfirmarPresencaState extends State<ConfirmarPresenca> {
     }
   }
 
+  Future<void> _confirmarEmbarque() async {
+    if (_confirmacao == null) return;
+
+    setState(() => _processando = true);
+
+    try {
+      await supabase.from('confirmacoes').update({
+        'status_embarque': 'embarcado',
+        'embarcado_em': DateTime.now().toIso8601String(),
+      }).eq('id', _confirmacao!['id']);
+
+      await _carregarDados();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Embarque confirmado! Boa viagem!'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erro ao confirmar embarque.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setState(() => _processando = false);
+    }
+  }
+
   String _traduzirTipo(String tipo) {
     switch (tipo) {
       case 'ida':
@@ -357,6 +392,38 @@ class _ConfirmarPresencaState extends State<ConfirmarPresenca> {
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+              if (_confirmacao!['tipo'] != 'ida' &&
+                  _confirmacao!['status_embarque'] == 'confirmado')
+                ElevatedButton.icon(
+                  onPressed: _processando ? null : _confirmarEmbarque,
+                  icon: const Icon(Icons.directions_bus),
+                  label: const Text('Confirmar Meu Embarque'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              const SizedBox(height: 16),
+              if (_confirmacao!['status_embarque'] == 'embarcado')
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.blue),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.directions_bus, color: Colors.blue),
+                      SizedBox(width: 12),
+                      Text('Embarque confirmado!',
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
               const SizedBox(height: 16),
               OutlinedButton.icon(
                 onPressed: _processando ? null : _cancelar,

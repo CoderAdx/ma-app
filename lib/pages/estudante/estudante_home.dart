@@ -1,23 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:ma_app/services/auth_service.dart';
+import 'package:ma_app/services/viagem_service.dart';
 import 'package:ma_app/pages/estudante/carteira_digital.dart';
 import 'package:ma_app/pages/estudante/confirmar_presenca.dart';
 import 'package:ma_app/pages/estudante/minhas_penalidades.dart';
 import 'package:ma_app/widgets/alerta_realtime.dart';
 
-class EstudanteHome extends StatelessWidget {
+class EstudanteHome extends StatefulWidget {
   final Map<String, dynamic> usuario;
   const EstudanteHome({super.key, required this.usuario});
 
   @override
-  Widget build(BuildContext context) {
-    final suspenso = usuario['status'] == 'suspenso';
+  State<EstudanteHome> createState() => _EstudanteHomeState();
+}
 
-    // ID da viagem do dia — depois vamos buscar dinamicamente
-    const viagemId = 'ae624368-a98d-4df2-b1a9-7426449dd28a';
+class _EstudanteHomeState extends State<EstudanteHome> {
+  String? _viagemId;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarViagem();
+  }
+
+  Future<void> _carregarViagem() async {
+    final viagem = await ViagemService.getViagemHoje();
+    setState(() => _viagemId = viagem?['id']);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final suspenso = widget.usuario['status'] == 'suspenso';
 
     return AlertaRealtimeWrapper(
-      viagemId: viagemId,
+      viagemId: _viagemId ?? 'sem-viagem',
       child: Scaffold(
         backgroundColor: suspenso ? Colors.grey[300] : null,
         appBar: AppBar(
@@ -61,7 +77,7 @@ class EstudanteHome extends StatelessWidget {
                   ),
                 const SizedBox(height: 24),
                 Text(
-                  'Olá, ${usuario['nome_completo'].split(' ')[0]}!',
+                  'Olá, ${widget.usuario['nome_completo'].split(' ')[0]}!',
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold),
                 ),
