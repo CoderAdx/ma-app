@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ma_app/services/auth_service.dart';
 import 'package:ma_app/pages/estudante/carteira_digital.dart';
 import 'package:ma_app/pages/estudante/confirmar_presenca.dart';
+import 'package:ma_app/pages/estudante/minhas_penalidades.dart';
 
 class EstudanteHome extends StatelessWidget {
   final Map<String, dynamic> usuario;
@@ -85,6 +86,18 @@ class EstudanteHome extends StatelessWidget {
                 },
                 icon: const Icon(Icons.badge_outlined),
                 label: const Text('Minha Carteira Digital'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MinhasPenalidades()),
+                ),
+                icon: const Icon(Icons.warning_amber_rounded),
+                label: const Text('Minhas Penalidades'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
