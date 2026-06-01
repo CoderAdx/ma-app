@@ -8,6 +8,7 @@ import 'package:ma_app/pages/fiscal/criar_viagem.dart';
 import 'package:ma_app/pages/fiscal/lista_alunos.dart';
 import 'package:ma_app/pages/fiscal/lista_embarque.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ma_app/pages/admin/cadastro_aluno.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -250,6 +251,16 @@ class _AdminHomeState extends State<AdminHome> {
                         MaterialPageRoute(
                             builder: (_) => const CadastroUsuario()),
                       ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildBotao(
+                      label: 'Gerenciar Alunos',
+                      icone: Icons.school,
+                      cor: const Color(0xFF1E6B3C),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const CadastroAluno())),
                     ),
                   ],
                 ),
