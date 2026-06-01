@@ -3,6 +3,7 @@ import 'package:ma_app/services/auth_service.dart';
 import 'package:ma_app/pages/estudante/estudante_home.dart';
 import 'package:ma_app/pages/fiscal/fiscal_home.dart';
 import 'package:ma_app/pages/operador/operador_home.dart';
+import 'package:ma_app/pages/admin/admin_home.dart';
 
 class HomeRouter extends StatefulWidget {
   const HomeRouter({super.key});
@@ -48,8 +49,9 @@ class _HomeRouterState extends State<HomeRouter> {
       case 'estudante':
         return EstudanteHome(usuario: _usuario!);
       case 'fiscal':
-      case 'admin':
         return FiscalHome(usuario: _usuario!);
+      case 'admin':
+        return AdminHome(usuario: _usuario!);
       case 'motorista':
       case 'monitor':
         return OperadorHome(usuario: _usuario!);
