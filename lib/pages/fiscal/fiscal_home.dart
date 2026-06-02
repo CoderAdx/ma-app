@@ -4,6 +4,7 @@ import 'package:ma_app/services/viagem_service.dart';
 import 'package:ma_app/pages/fiscal/criar_viagem.dart';
 import 'package:ma_app/pages/fiscal/lista_alunos.dart';
 import 'package:ma_app/pages/fiscal/lista_embarque.dart';
+import 'package:ma_app/pages/fiscal/aplicar_penalidade.dart';
 
 class FiscalHome extends StatefulWidget {
   final Map<String, dynamic> usuario;
@@ -128,9 +129,12 @@ class _FiscalHomeState extends State<FiscalHome> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
                     ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const AplicarPenalidade()),
+                      ),
                       icon: const Icon(Icons.warning_amber_rounded),
                       label: const Text('Aplicar Penalidade'),
                       style: ElevatedButton.styleFrom(

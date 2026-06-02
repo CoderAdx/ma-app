@@ -9,6 +9,7 @@ import 'package:ma_app/pages/fiscal/lista_alunos.dart';
 import 'package:ma_app/pages/fiscal/lista_embarque.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ma_app/pages/admin/cadastro_aluno.dart';
+import 'package:ma_app/pages/fiscal/aplicar_penalidade.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -198,6 +199,17 @@ class _AdminHomeState extends State<AdminHome> {
                           builder: (_) =>
                               ListaAlunos(viagemId: _viagemHoje?['id']),
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildBotao(
+                      label: 'Aplicar Penalidade',
+                      icone: Icons.gavel,
+                      cor: Colors.orange,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const AplicarPenalidade()),
                       ),
                     ),
                     const SizedBox(height: 12),
