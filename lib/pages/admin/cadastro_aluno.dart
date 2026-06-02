@@ -46,7 +46,7 @@ class _CadastroAlunoState extends State<CadastroAluno> {
             id, curso, turno, pontos_penalidade,
             usuarios(nome_completo, email, status, cpf),
             instituicoes(nome)
-          ''').order('created_at');
+          ''');
 
       setState(() {
         _instituicoes = List<Map<String, dynamic>>.from(instituicoes);
@@ -403,7 +403,7 @@ class _CadastroAlunoState extends State<CadastroAluno> {
             await _carregarDados();
             _mostrarSenhaGerada(
               resultado['nome'],
-              resultado['emial'],
+              resultado['email'],
               resultado['senha'],
             );
           }

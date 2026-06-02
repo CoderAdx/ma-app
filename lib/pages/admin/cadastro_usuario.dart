@@ -29,22 +29,31 @@ class _CadastroUsuarioState extends State<CadastroUsuario> {
   }
 
   Future<void> _carregarUsuarios() async {
-    var query = supabase
-        .from('usuarios')
-        .select('id, nome_completo, email, perfil, status');
+    try {
+      List<Map<String, dynamic>> usuarios;
 
-    if (_filtro != 'todos') {
-      final usuarios = await query.eq('perfil', _filtro).order('perfil');
+      if (_filtro != 'todos') {
+        usuarios = await supabase
+            .from('usuarios')
+            .select('id, nome_completo, email, perfil, status')
+            .eq('perfil', _filtro);
+      } else {
+        usuarios = await supabase
+            .from('usuarios')
+            .select('id, nome_completo, email, perfil, status');
+      }
+
+      print('FILTRO: $_filtro');
+      print('TOTAL: ${usuarios.length}');
+      print('DADOS: $usuarios');
+
       setState(() {
         _usuarios = List<Map<String, dynamic>>.from(usuarios);
         _carregando = false;
       });
-    } else {
-      final usuarios = await query;
-      setState(() {
-        _usuarios = List<Map<String, dynamic>>.from(usuarios);
-        _carregando = false;
-      });
+    } catch (e) {
+      print('ERRO: $e');
+      setState(() => _carregando = false);
     }
   }
 
@@ -196,6 +205,8 @@ class _CadastroUsuarioState extends State<CadastroUsuario> {
         return Colors.blue;
       case 'monitor':
         return Colors.purple;
+      case 'estudante':
+        return Colors.teal;
       default:
         return Colors.grey;
     }
@@ -224,10 +235,11 @@ class _CadastroUsuarioState extends State<CadastroUsuario> {
               children: [
                 for (final f in [
                   'todos',
+                  'admin',
+                  'estudante',
                   'fiscal',
                   'motorista',
-                  'monitor',
-                  'admin'
+                  'monitor'
                 ])
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
