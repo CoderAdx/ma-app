@@ -32,6 +32,12 @@ class _AdminHomeState extends State<AdminHome> {
     _carregarDados();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _carregarDados();
+  }
+
   Future<void> _carregarDados() async {
     try {
       final viagem = await ViagemService.getViagemHoje();

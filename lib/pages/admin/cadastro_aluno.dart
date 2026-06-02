@@ -44,7 +44,7 @@ class _CadastroAlunoState extends State<CadastroAluno> {
 
       final alunos = await supabase.from('estudantes').select('''
             id, curso, turno, pontos_penalidade,
-            usuarios(nome_completo, email, status, cpf),
+            usuarios(id, nome_completo, email, status, cpf),
             instituicoes(nome)
           ''');
 
@@ -79,14 +79,12 @@ class _CadastroAlunoState extends State<CadastroAluno> {
     }
 
     setState(() => _salvando = true);
-
     final senhaGerada = _gerarSenha();
 
     try {
       final session = supabase.auth.currentSession;
       if (session == null) throw Exception('Sessão expirada');
 
-      // Cria o usuário no Auth via backend
       final response = await http.post(
         Uri.parse('http://192.168.1.29:8000/auth/criar-usuario'),
         headers: {
@@ -109,18 +107,15 @@ class _CadastroAlunoState extends State<CadastroAluno> {
       final novoUsuario = jsonDecode(response.body);
       final usuarioId = novoUsuario['id'];
 
-      // Atualiza o CPF na tabela usuarios
       await supabase
           .from('usuarios')
           .update({'cpf': _cpfController.text.trim()}).eq('id', usuarioId);
 
-      // Calcula validade — fim do semestre atual
       final agora = DateTime.now();
       final validade = agora.month <= 6
           ? DateTime(agora.year, 12, 31)
           : DateTime(agora.year + 1, 6, 30);
 
-      // Cria o perfil de estudante
       await supabase.from('estudantes').insert({
         'usuario_id': usuarioId,
         'instituicao_id': _instituicaoSelecionada,
@@ -241,148 +236,109 @@ class _CadastroAlunoState extends State<CadastroAluno> {
         ],
       ),
     );
-  }
+  } // <- fechamento correto do _mostrarSenhaGerada
 
-  void _mostrarFormulario() {
-    showModalBottomSheet(
+  Future<void> _confirmarDelete(
+      Map<String, dynamic> aluno, Map<String, dynamic> usuario) async {
+    final confirmar = await showDialog<bool>(
       context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) => Padding(
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 24,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text('Cadastrar Aluno',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                const Text(
-                  'Uma senha temporária será gerada automaticamente.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _nomeController,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome completo',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person_outlined),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _cpfController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'CPF',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.badge_outlined),
-                    hintText: '000.000.000-00',
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email_outlined),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  onChanged: (v) => _cursoController = v,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: 'Curso',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.school_outlined),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: _turnoSelecionado,
-                  decoration: const InputDecoration(
-                    labelText: 'Turno',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.access_time),
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                        value: 'matutino', child: Text('Matutino')),
-                    DropdownMenuItem(
-                        value: 'vespertino', child: Text('Vespertino')),
-                    DropdownMenuItem(value: 'noturno', child: Text('Noturno')),
-                  ],
-                  onChanged: (v) => setModalState(() => _turnoSelecionado = v!),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: _instituicaoSelecionada,
-                  hint: const Text('Selecione a instituição'),
-                  decoration: const InputDecoration(
-                    labelText: 'Instituição',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.account_balance_outlined),
-                  ),
-                  items: _instituicoes.isEmpty
-                      ? [
-                          const DropdownMenuItem(
-                              value: '', child: Text('Carregando...'))
-                        ]
-                      : _instituicoes.map((inst) {
-                          return DropdownMenuItem<String>(
-                            value: inst['id'] as String,
-                            child: Text(
-                              '${inst['nome']} - ${inst['cidade']}',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          );
-                        }).toList(),
-                  onChanged: _instituicoes.isEmpty
-                      ? null
-                      : (v) {
-                          setModalState(() => _instituicaoSelecionada = v);
-                          setState(() => _instituicaoSelecionada = v);
-                        },
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: _salvando ? null : _salvar,
-                  icon: _salvando
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Icon(Icons.person_add),
-                  label: const Text('Cadastrar Aluno'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: const Color(0xFF1E6B3C),
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Colors.red, width: 2),
         ),
+        title: const Row(
+          children: [
+            Icon(Icons.warning_rounded, color: Colors.red),
+            SizedBox(width: 8),
+            Text('Remover Aluno?'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              usuario['nome_completo'],
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Isso removerá permanentemente o aluno, '
+              'seu histórico de penalidades e confirmações.',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Remover'),
+          ),
+        ],
       ),
     );
+
+    if (confirmar != true) return;
+
+    try {
+      // 1 — Remove do Supabase Auth PRIMEIRO via backend
+      final session = supabase.auth.currentSession;
+      if (session != null) {
+        await http.delete(
+          Uri.parse(
+              'http://192.168.1.29:8000/auth/deletar-usuario/${usuario['id']}'),
+          headers: {
+            'Authorization': 'Bearer ${session.accessToken}',
+          },
+        );
+      }
+
+      // 2 — Remove confirmações
+      await supabase
+          .from('confirmacoes')
+          .delete()
+          .eq('estudante_id', aluno['id']);
+
+      // 3 — Remove penalidades
+      await supabase
+          .from('penalidades')
+          .delete()
+          .eq('estudante_id', aluno['id']);
+
+      // 4 — Remove o perfil de estudante
+      await supabase.from('estudantes').delete().eq('id', aluno['id']);
+
+      // 5 — Remove o usuário da tabela public.usuarios
+      await supabase.from('usuarios').delete().eq('id', usuario['id']);
+
+      await _carregarDados();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Aluno removido com sucesso.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Erro ao remover: $e'),
+              backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   @override
@@ -458,8 +414,11 @@ class _CadastroAlunoState extends State<CadastroAluno> {
                           '${aluno['curso']} • ${inst?['nome'] ?? 'N/A'}',
                           style: const TextStyle(fontSize: 12),
                         ),
-                        trailing: pontos > 0
-                            ? Container(
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (pontos > 0)
+                              Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
@@ -478,8 +437,14 @@ class _CadastroAlunoState extends State<CadastroAluno> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              )
-                            : null,
+                              ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline,
+                                  color: Colors.red),
+                              onPressed: () => _confirmarDelete(aluno, usuario),
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),

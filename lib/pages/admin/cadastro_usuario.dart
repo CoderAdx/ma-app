@@ -175,6 +175,8 @@ class _CadastroUsuarioState extends State<CadastroUsuario> {
                       value: 'motorista', child: Text('Motorista')),
                   DropdownMenuItem(value: 'monitor', child: Text('Monitor')),
                   DropdownMenuItem(value: 'admin', child: Text('Admin')),
+                  DropdownMenuItem(
+                      value: 'estudante', child: Text('Estudante')),
                 ],
                 onChanged: (v) => setState(() => _perfilSelecionado = v!),
               ),
