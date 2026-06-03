@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:app_links/app_links.dart';
 import 'package:ma_app/config.dart';
 import 'package:ma_app/pages/home_router.dart';
 import 'package:ma_app/pages/login_page.dart';
+import 'package:ma_app/pages/redefinir_senha.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -45,8 +47,38 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
+  bool _redefinindoSenha = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _escutarDeepLinks();
+  }
+
+  void _escutarDeepLinks() {
+    final appLinks = AppLinks();
+
+    // Link recebido com app fechado
+    appLinks.getInitialLink().then((uri) {
+      if (uri != null && uri.toString().contains('reset-password')) {
+        setState(() => _redefinindoSenha = true);
+      }
+    });
+
+    // Link recebido com app aberto
+    appLinks.uriLinkStream.listen((uri) {
+      if (uri.toString().contains('reset-password')) {
+        setState(() => _redefinindoSenha = true);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_redefinindoSenha) {
+      return RedefinirSenha();
+    }
+
     return StreamBuilder(
       stream: supabase.auth.onAuthStateChange,
       builder: (context, snapshot) {
@@ -56,8 +88,7 @@ class _AuthGateState extends State<AuthGate> {
           );
         }
 
-        final session = snapshot.data?.session ??
-            supabase.auth.currentSession; // <- verifica sessão em cache
+        final session = snapshot.data?.session ?? supabase.auth.currentSession;
 
         if (session != null) {
           return const HomeRouter();

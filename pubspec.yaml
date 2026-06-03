@@ -24,6 +24,7 @@ dependencies:
 
   # Ícones extras
   cupertino_icons: ^1.0.2
+  app_links: ^7.1.1
 
 dev_dependencies:
   flutter_test:

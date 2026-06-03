@@ -36,6 +36,81 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _mostrarResetSenha() async {
+    final emailResetController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text('Redefinir senha'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Digite seu email e enviaremos um link para redefinir sua senha.',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: emailResetController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (emailResetController.text.trim().isEmpty) return;
+
+              try {
+                await supabase.auth.resetPasswordForEmail(
+                  emailResetController.text.trim(),
+                );
+
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          'Email enviado! Verifique sua caixa de entrada.'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Erro ao enviar email. Tente novamente.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1E6B3C),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Enviar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cor = Theme.of(context).colorScheme;
@@ -87,6 +162,16 @@ class _LoginPageState extends State<LoginPage> {
                 onSubmitted: (_) => _login(),
               ),
               const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => _mostrarResetSenha(),
+                  child: const Text(
+                    'Esqueceu a senha?',
+                    style: TextStyle(color: Color(0xFF1E6B3C)),
+                  ),
+                ),
+              ),
               if (_erro != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
