@@ -5,6 +5,7 @@ import 'package:ma_app/pages/estudante/carteira_digital.dart';
 import 'package:ma_app/pages/estudante/confirmar_presenca.dart';
 import 'package:ma_app/pages/estudante/minhas_penalidades.dart';
 import 'package:ma_app/widgets/alerta_realtime.dart';
+import 'package:ma_app/pages/estudante/trocar_senha.dart';
 
 class EstudanteHome extends StatefulWidget {
   final Map<String, dynamic> usuario;
@@ -119,6 +120,19 @@ class _EstudanteHomeState extends State<EstudanteHome> {
                   ),
                   icon: const Icon(Icons.warning_amber_rounded),
                   label: const Text('Minhas Penalidades'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TrocarSenha()),
+                  ),
+                  icon: const Icon(Icons.lock_outline),
+                  label: const Text('Trocar Senha'),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),

@@ -11,7 +11,7 @@ class AuthService {
 
       final response = await supabase
           .from('usuarios')
-          .select('id, nome_completo, perfil, status')
+          .select('id, nome_completo, perfil, status, cpf') // <- adiciona cpf
           .eq('id', userId)
           .single();
 
