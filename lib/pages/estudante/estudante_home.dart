@@ -7,6 +7,7 @@ import 'package:ma_app/pages/estudante/minhas_penalidades.dart';
 import 'package:ma_app/widgets/alerta_realtime.dart';
 import 'package:ma_app/pages/estudante/trocar_senha.dart';
 import 'package:ma_app/pages/estudante/editar_perfil.dart';
+import 'package:ma_app/pages/chat/lista_contatos.dart';
 
 class EstudanteHome extends StatefulWidget {
   final Map<String, dynamic> usuario;
@@ -154,6 +155,23 @@ class _EstudanteHomeState extends State<EstudanteHome> {
                   label: const Text('Atualizar Foto'),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          ListaContatos(usuarioAtual: widget.usuario),
+                    ),
+                  ),
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  label: const Text('Mensagens'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: const Color(0xFF1E6B3C),
+                    foregroundColor: Colors.white,
                   ),
                 ),
               ],

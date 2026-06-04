@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ma_app/pages/chat/chat_page.dart';
+import 'package:ma_app/services/auth_service.dart';
 import 'package:ma_app/pages/estudante/carteira_digital_fiscal.dart';
 
 class PerfilAluno extends StatelessWidget {
@@ -128,7 +130,25 @@ class PerfilAluno extends StatelessWidget {
 
             // Botão chat
             OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () async {
+                final usuarioAtual = await AuthService.getUsuarioAtual();
+                if (usuarioAtual != null && context.mounted) {
+                  // Busca o estudante completo com foto_url
+                  final destinatario = {
+                    ...estudante['usuarios'] as Map<String, dynamic>,
+                    'foto_url': estudante['foto_url'],
+                  };
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChatPage(
+                        destinatario: destinatario,
+                        usuarioAtual: usuarioAtual,
+                      ),
+                    ),
+                  );
+                }
+              },
               icon: const Icon(Icons.chat_bubble_outline),
               label: const Text('Enviar Mensagem'),
               style: OutlinedButton.styleFrom(
